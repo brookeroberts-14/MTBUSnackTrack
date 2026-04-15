@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnackTrack - Staff</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>body { font-family: 'Inter', sans-serif; } .tab-active { background-color: #18181b; color: white; }</style>
+</head>
+<body class="min-h-screen bg-zinc-100">
+<header class="bg-white border-b border-zinc-300 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <h1 class="text-xl font-bold tracking-tight">SnackTrack</h1>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-zinc-500">{{ user_name }}</span>
+        <span class="px-2 py-1 bg-zinc-200 text-zinc-900 text-xs font-medium rounded">{{ user_role|title }}</span>
+        <a href="{% url 'logout' %}" class="text-zinc-500 hover:text-zinc-900 text-sm font-medium">Logout</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="bg-white border-b border-zinc-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex gap-1 py-2">
+      <a href="{% url 'staff_dashboard' %}" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'usage' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Record Usage</a>
+      <a href="{% url 'staff_dashboard' %}?tab=inventory" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'inventory' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Inventory</a>
+      <a href="{% url 'staff_dashboard' %}?tab=reports" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'reports' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Reports</a>
+    </div>
+  </div>
+</div>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  {% if tab == 'usage' %}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white border border-zinc-300 rounded-lg">
+      <div class="p-6 border-b border-zinc-200">
+        <h2 class="text-xl font-bold tracking-tight">Record Snack Usage</h2>
+      </div>
+      <form method="post" action="{% url 'record_usage' %}" class="p-6 space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Classroom</label>
+          <select name="classroom_id" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+            <option value="">Select a classroom</option>
+            {% for c in classrooms %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Snack</label>
+          <select name="snack_id" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+            <option value="">Select a snack</option>
+            {% for s in available_snacks %}
+            <option value="{{ s.id }}">{{ s.name }} ({{ s.quantity }} available)</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Quantity</label>
+          <input type="number" name="quantity" value="1" min="1" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+        </div>
+        <button type="submit" class="w-full bg-zinc-900 text-white py-2 px-4 rounded-md hover:bg-zinc-800 font-medium">Record Usage</button>
+      </form>
+    </div>
+    <div class="bg-white border border-zinc-300 rounded-lg">
+      <div class="p-6 border-b border-zinc-200">
+        <h2 class="text-xl font-bold tracking-tight">Recent Transactions</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th class="text-left text-xs font-bold uppercase tracking-wider text-zinc-500 pb-2">Snack</th>
+              <th class="text-left text-xs font-bold uppercase tracking-wider text-zinc-500 pb-2">Room</th>
+              <th class="text-left text-xs font-bold uppercase tracking-wider text-zinc-500 pb-2">Qty</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-200">
+            {% for t in transactions %}
+            <tr class="hover:bg-zinc-50">
+              <td class="py-2">{{ t.snack_name }}</td>
+              <td class="py-2 text-zinc-500">{{ t.classroom_name }}</td>
+              <td class="py-2">{{ t.quantity }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="py-8 text-center text-zinc-500">No transactions yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if tab == 'inventory' %}
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ inv_status.total_items }}</div><p class="text-xs text-zinc-500 uppercase">Total Items</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ inv_status.total_quantity }}</div><p class="text-xs text-zinc-500 uppercase">Total Quantity</p></div>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6"><div class="text-2xl font-bold text-red-600">{{ inv_status.low_stock_count }}</div><p class="text-xs text-zinc-500 uppercase">Low Stock Alerts</p></div>
+  </div>
+  <div class="bg-white border border-zinc-300 rounded-lg overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-zinc-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Name</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Quantity</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Price</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Supplier</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-200">
+        {% for s in all_snacks %}
+        <tr class="hover:bg-zinc-50">
+          <td class="px-4 py-3 font-medium">{{ s.name }}</td>
+          <td class="px-4 py-3">{{ s.quantity }}</td>
+          <td class="px-4 py-3">${{ s.purchase_price|floatformat:2 }}</td>
+          <td class="px-4 py-3 text-zinc-500">{{ s.supplier|default:"-" }}</td>
+          <td class="px-4 py-3">
+            {% if s.quantity == 0 %}<span class="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded">Out</span>
+            {% elif s.quantity <= s.low_stock_threshold %}<span class="px-2 py-1 bg-yellow-500 text-black text-xs font-medium rounded">Low</span>
+            {% else %}<span class="px-2 py-1 bg-green-600 text-white text-xs font-medium rounded">OK</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-4 py-8 text-center text-zinc-500">No snacks yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if tab == 'reports' %}
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.total_usage }}</div><p class="text-xs text-zinc-500 uppercase">Total Snacks Used</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.total_transactions }}</div><p class="text-xs text-zinc-500 uppercase">Total Transactions</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.usage_by_snack|length }}</div><p class="text-xs text-zinc-500 uppercase">Snack Types Used</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.usage_by_classroom|length }}</div><p class="text-xs text-zinc-500 uppercase">Classrooms Served</p></div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white border border-zinc-300 rounded-lg p-6">
+      <h3 class="text-lg font-bold mb-4">Usage by Snack</h3>
+      <div class="h-64"><canvas id="snack-chart"></canvas></div>
+    </div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6">
+      <h3 class="text-lg font-bold mb-4">Usage by Classroom</h3>
+      <div class="h-64"><canvas id="classroom-chart"></canvas></div>
+    </div>
+  </div>
+  <div class="bg-white border border-zinc-300 rounded-lg p-6 mb-6">
+    <h3 class="text-lg font-bold mb-4">Daily Usage Trend</h3>
+    <div class="h-64"><canvas id="trend-chart"></canvas></div>
+  </div>
+  <div class="bg-white border border-zinc-300 rounded-lg">
+    <div class="p-6 border-b border-zinc-200"><h3 class="text-lg font-bold">Most Used Snacks</h3></div>
+    <table class="w-full">
+      <thead class="bg-zinc-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Rank</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Snack</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Total Used</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-200">
+        {% for s in summary.usage_by_snack|slice:":5" %}
+        <tr class="hover:bg-zinc-50">
+          <td class="px-4 py-3 font-medium">{{ forloop.counter }}</td>
+          <td class="px-4 py-3">{{ s.snack_name }}</td>
+          <td class="px-4 py-3">{{ s.total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="px-4 py-8 text-center text-zinc-500">No usage data yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% autoescape off %}
+  <script>
+    var summaryData = {{ summary_json }};
+    if (summaryData.usage_by_snack.length > 0) {
+      new Chart(document.getElementById('snack-chart').getContext('2d'), {
+        type: 'bar', data: { labels: summaryData.usage_by_snack.slice(0,8).map(function(s){return s.snack_name}), datasets: [{data: summaryData.usage_by_snack.slice(0,8).map(function(s){return s.total}), backgroundColor: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#06b6d4', '#a855f7']}] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    }
+    if (summaryData.usage_by_classroom.length > 0) {
+      new Chart(document.getElementById('classroom-chart').getContext('2d'), {
+        type: 'doughnut', data: { labels: summaryData.usage_by_classroom.map(function(c){return c.classroom_name}), datasets: [{data: summaryData.usage_by_classroom.map(function(c){return c.total}), backgroundColor: ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#06b6d4', '#a855f7']}] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+    if (summaryData.daily_trend.length > 0) {
+      new Chart(document.getElementById('trend-chart').getContext('2d'), {
+        type: 'line', data: { labels: summaryData.daily_trend.slice(-14).map(function(d){return d.date.slice(5)}), datasets: [{data: summaryData.daily_trend.slice(-14).map(function(d){return d.total}), borderColor: '#18181b', backgroundColor: 'rgba(24,24,27,0.1)', fill: true, tension: 0.4}] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    }
+  </script>
+  {% endautoescape %}
+  {% endif %}
+
+</main>
+</body>
+</html>

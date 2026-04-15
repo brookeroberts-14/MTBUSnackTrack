@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnackTrack - Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; } .tab-active { background-color: #18181b; color: white; }</style>
+</head>
+<body class="min-h-screen bg-zinc-100">
+<header class="bg-white border-b border-zinc-300 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <h1 class="text-xl font-bold tracking-tight">SnackTrack</h1>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-zinc-500">{{ user_name }}</span>
+        <span class="px-2 py-1 bg-zinc-200 text-zinc-900 text-xs font-medium rounded">Admin</span>
+        <a href="{% url 'logout' %}" class="text-zinc-500 hover:text-zinc-900 text-sm font-medium">Logout</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="bg-white border-b border-zinc-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex gap-1 py-2">
+      <a href="{% url 'admin_dashboard' %}" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'users' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Users</a>
+      <a href="{% url 'admin_classrooms' %}" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'classrooms' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Classrooms</a>
+      <a href="{% url 'admin_inventory' %}" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'inventory' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Inventory</a>
+      <a href="{% url 'admin_data' %}" class="px-4 py-2 text-sm font-medium rounded-md {% if tab == 'data' %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">Data</a>
+    </div>
+  </div>
+</div>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  {% if tab == 'users' %}
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold tracking-tight">Users</h2>
+    <a href="{% url 'add_user' %}" class="bg-zinc-900 text-white px-4 py-2 rounded-md hover:bg-zinc-800 text-sm font-medium">+ Add User</a>
+  </div>
+  <div class="bg-white border border-zinc-300 rounded-lg overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-zinc-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Name</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Email</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Role</th>
+          <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-zinc-500">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-200">
+        {% for u in users %}
+        <tr class="hover:bg-zinc-50">
+          <td class="px-4 py-3 font-medium">{{ u.name }}</td>
+          <td class="px-4 py-3 text-zinc-500">{{ u.email }}</td>
+          <td class="px-4 py-3"><span class="px-2 py-1 {% if u.role == 'admin' %}bg-zinc-900 text-white{% else %}bg-zinc-200 text-zinc-700{% endif %} text-xs font-medium rounded">{{ u.role }}</span></td>
+          <td class="px-4 py-3 text-right">
+            <a href="{% url 'edit_user' u.id %}" class="text-zinc-500 hover:text-zinc-900 text-sm mr-3">Edit</a>
+            <a href="{% url 'delete_user' u.id %}" onclick="return confirm('Delete this user?')" class="text-red-500 hover:text-red-700 text-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="px-4 py-8 text-center text-zinc-500">No users.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if tab == 'classrooms' %}
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold tracking-tight">Classrooms</h2>
+    <a href="{% url 'add_classroom' %}" class="bg-zinc-900 text-white px-4 py-2 rounded-md hover:bg-zinc-800 text-sm font-medium">+ Add Classroom</a>
+  </div>
+  <div class="bg-white border border-zinc-300 rounded-lg overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-zinc-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Name</th>
+          <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-zinc-500">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-200">
+        {% for c in classrooms %}
+        <tr class="hover:bg-zinc-50">
+          <td class="px-4 py-3 font-medium">{{ c.name }}</td>
+          <td class="px-4 py-3 text-right">
+            <a href="{% url 'edit_classroom' c.id %}" class="text-zinc-500 hover:text-zinc-900 text-sm mr-3">Edit</a>
+            <a href="{% url 'delete_classroom' c.id %}" onclick="return confirm('Delete?')" class="text-red-500 hover:text-red-700 text-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" class="px-4 py-8 text-center text-zinc-500">No classrooms yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if tab == 'inventory' %}
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold tracking-tight">Inventory</h2>
+    <a href="{% url 'add_snack' %}" class="bg-zinc-900 text-white px-4 py-2 rounded-md hover:bg-zinc-800 text-sm font-medium">+ Add Snack</a>
+  </div>
+  <div class="bg-white border border-zinc-300 rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-zinc-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Name</th>
+            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Qty</th>
+            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Price</th>
+            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Per Box</th>
+            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Supplier</th>
+            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Status</th>
+            <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-zinc-500">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-200">
+          {% for s in snacks %}
+          <tr class="hover:bg-zinc-50">
+            <td class="px-4 py-3 font-medium">{{ s.name }}</td>
+            <td class="px-4 py-3">{{ s.quantity }}</td>
+            <td class="px-4 py-3">${{ s.purchase_price|floatformat:2 }}</td>
+            <td class="px-4 py-3">{{ s.quantity_per_box }}</td>
+            <td class="px-4 py-3 text-zinc-500">{{ s.supplier|default:"-" }}</td>
+            <td class="px-4 py-3">
+              {% if s.quantity == 0 %}
+                <span class="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded">Out</span>
+              {% elif s.quantity <= s.low_stock_threshold %}
+                <span class="px-2 py-1 bg-yellow-500 text-black text-xs font-medium rounded">Low</span>
+              {% else %}
+                <span class="px-2 py-1 bg-green-600 text-white text-xs font-medium rounded">OK</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 text-right">
+              <a href="{% url 'edit_snack' s.id %}" class="text-zinc-500 hover:text-zinc-900 text-sm mr-3">Edit</a>
+              <a href="{% url 'delete_snack' s.id %}" onclick="return confirm('Delete?')" class="text-red-500 hover:text-red-700 text-sm">Delete</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="px-4 py-8 text-center text-zinc-500">No snacks yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if tab == 'data' %}
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold tracking-tight">Data Management</h2>
+    <p class="text-sm text-zinc-500 mt-1">Export, import, or clear your data</p>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white border border-zinc-300 rounded-lg p-4"><div class="text-2xl font-bold">{{ stats.users }}</div><p class="text-xs text-zinc-500 uppercase">Users</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-4"><div class="text-2xl font-bold">{{ stats.classrooms }}</div><p class="text-xs text-zinc-500 uppercase">Classrooms</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-4"><div class="text-2xl font-bold">{{ stats.snacks }}</div><p class="text-xs text-zinc-500 uppercase">Snacks</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-4"><div class="text-2xl font-bold">{{ stats.transactions }}</div><p class="text-xs text-zinc-500 uppercase">Transactions</p></div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white border border-zinc-300 rounded-lg p-6">
+      <h3 class="text-lg font-bold mb-2">Export Data</h3>
+      <p class="text-sm text-zinc-500 mb-4">Download all data as JSON.</p>
+      <a href="{% url 'export_data' %}" class="block w-full bg-zinc-900 text-white py-2 px-4 rounded-md hover:bg-zinc-800 font-medium text-center">Export</a>
+    </div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6">
+      <h3 class="text-lg font-bold mb-2">Import Data</h3>
+      <p class="text-sm text-zinc-500 mb-4">Restore from a backup file.</p>
+      <form method="post" action="{% url 'import_data' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".json" required class="mb-2 w-full text-sm">
+        <button type="submit" class="w-full border border-zinc-300 py-2 px-4 rounded-md hover:bg-zinc-50 font-medium">Import</button>
+      </form>
+    </div>
+    <div class="bg-white border border-red-200 rounded-lg p-6">
+      <h3 class="text-lg font-bold mb-2 text-red-600">Clear All Data</h3>
+      <p class="text-sm text-zinc-500 mb-4">Delete everything and start fresh.</p>
+      <form method="post" action="{% url 'clear_data' %}" onsubmit="return confirm('Clear ALL data? This cannot be undone!')">
+        {% csrf_token %}
+        <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 font-medium">Clear</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Source Code{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  pre, code { font-family: 'JetBrains Mono', monospace; }
+  pre { max-height: 70vh; }
+  pre::-webkit-scrollbar { width: 8px; height: 8px; }
+  pre::-webkit-scrollbar-track { background: #27272a; }
+  pre::-webkit-scrollbar-thumb { background: #52525b; border-radius: 4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="bg-white border-b border-zinc-300 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-bold tracking-tight">SnackTrack</h1>
+        <span class="px-2 py-1 bg-zinc-200 text-zinc-600 text-xs font-medium rounded">Source Code</span>
+      </div>
+      <a href="{% url 'login' %}" class="text-sm text-zinc-500 hover:text-zinc-900 font-medium">Back to App</a>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold tracking-tight mb-1">Source Code</h2>
+    <p class="text-sm text-zinc-500">Click "Copy" to copy any file to your clipboard.</p>
+  </div>
+
+  <div class="flex flex-wrap gap-1 mb-6 bg-white border border-zinc-300 rounded-lg p-2">
+    {% for file in files %}
+    <a href="{% url 'code_view' %}?file={{ forloop.counter0 }}"
+       class="px-3 py-1.5 text-sm font-medium rounded-md {% if forloop.counter0 == active_index %}tab-active{% else %}text-zinc-500 hover:bg-zinc-200{% endif %}">
+      {{ file.label }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="flex justify-between items-center mb-3">
+    <div class="flex items-center gap-3">
+      <span class="text-sm font-mono font-bold text-zinc-900">{{ active_file.path }}</span>
+      <span class="text-xs text-zinc-400">{{ active_file.lines }} lines</span>
+    </div>
+    <button onclick="copyCode()" class="px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white rounded-md hover:bg-zinc-700" id="copy-btn">Copy</button>
+  </div>
+
+  <div class="border border-zinc-300 rounded-lg overflow-hidden">
+    <pre class="p-4 overflow-x-auto bg-zinc-950 text-zinc-100 text-xs leading-relaxed font-mono"><code>{{ active_file.content }}</code></pre>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-zinc-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium z-50">Copied!</div>
+</main>
+
+<script>
+var rawCode = {{ active_file.content_json|safe }};
+function copyCode() {
+  navigator.clipboard.writeText(rawCode).then(function() {
+    var toast = document.getElementById('toast');
+    toast.classList.remove('hidden');
+    setTimeout(function() { toast.classList.add('hidden'); }, 1500);
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+</script>
+{% endblock %}
