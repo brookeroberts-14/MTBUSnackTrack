@@ -22,32 +22,29 @@
     <form method="post" class="space-y-4">
       {% csrf_token %}
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Name</label>
-        <input type="text" name="name" required value="{{ snack.name|default:'' }}" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+        <label for="name" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Name</label>
+        <input type="text" id="name" name="name" required value="{{ snack.name|default:'' }}" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+      </div>
+      <div class="grid grid-cols-1 gap-4">
+        <div>
+          <label for="quantity" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Quantity</label>
+          <input type="number" id="quantity" name="quantity" value="{{ snack.quantity|default:'0' }}" min="0" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+        </div>
+    
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Quantity</label>
-          <input type="number" name="quantity" value="{{ snack.quantity|default:'0' }}" min="0" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+          <label for="perbox" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Per Box</label>
+          <input type="number" id="perbox" name="perbox" value="{{ snack.quantity_per_box|default:'1' }}" min="1" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Price</label>
-          <input type="number" name="price" value="{{ snack.purchase_price|default:'0' }}" step="0.01" min="0" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Per Box</label>
-          <input type="number" name="perbox" value="{{ snack.quantity_per_box|default:'1' }}" min="1" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Low Stock Alert</label>
-          <input type="number" name="threshold" value="{{ snack.low_stock_threshold|default:'10' }}" min="0" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+          <label for="threshold" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Low Stock Alert</label>
+          <input type="number" id="threshold" name="threshold" value="{{ snack.low_stock_threshold|default:'10' }}" min="0" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
         </div>
       </div>
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Supplier</label>
-        <input type="text" name="supplier" value="{{ snack.supplier|default:'' }}" placeholder="Optional" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+        <label for="supplier" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Supplier</label>
+        <input type="text" id="supplier" name="supplier" value="{{ snack.supplier|default:'' }}" placeholder="Optional" class="w-full px-3 py-2 border border-zinc-300 rounded-md">
       </div>
       <div class="flex gap-3 pt-2">
         <button type="submit" class="bg-zinc-900 text-white px-6 py-2 rounded-md hover:bg-zinc-800 font-medium">Save</button>

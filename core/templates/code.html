@@ -56,7 +56,8 @@
 </main>
 
 <script>
-var rawCode = {{ active_file.content_json|safe }};
+var rawCode = "{{ active_file.content_json|safe }}";
+
 function copyCode() {
   navigator.clipboard.writeText(rawCode).then(function() {
     var toast = document.getElementById('toast');
