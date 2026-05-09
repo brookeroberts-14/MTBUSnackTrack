@@ -12,7 +12,6 @@ urlpatterns = [
     path('admin-dashboard/classrooms/', views.admin_dashboard, {'default_tab': 'classrooms'}, name='admin_classrooms'),
     path('admin-dashboard/inventory/', views.admin_dashboard, {'default_tab': 'inventory'}, name='admin_inventory'),
     path('admin-dashboard/data/', views.admin_dashboard, {'default_tab': 'data'}, name='admin_data'),
-    path('admin-dashboard/usage/', views.admin_dashboard, {'default_tab': 'usage'}, name='admin_usage'),
     path('staff-dashboard/', views.staff_dashboard, name='staff_dashboard'),
 
     # User CRUD

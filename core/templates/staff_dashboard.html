@@ -7,10 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .tab-active { background-color: #18181b; color: white; }
-  </style>
+  <style>body { font-family: 'Inter', sans-serif; } .tab-active { background-color: #18181b; color: white; }</style>
 </head>
 <body class="min-h-screen bg-zinc-100">
 <header class="bg-white border-b border-zinc-300 sticky top-0 z-50">
@@ -47,8 +44,8 @@
       <form method="post" action="{% url 'record_usage' %}" class="p-6 space-y-4">
         {% csrf_token %}
         <div>
-          <label for="classroom_id" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Classroom</label>
-          <select id="classroom_id" name="classroom_id" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Classroom</label>
+          <select name="classroom_id" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
             <option value="">Select a classroom</option>
             {% for c in classrooms %}
             <option value="{{ c.id }}">{{ c.name }}</option>
@@ -56,8 +53,8 @@
           </select>
         </div>
         <div>
-          <label for="snack_id" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Snack</label>
-          <select id="snack_id" name="snack_id" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Snack</label>
+          <select name="snack_id" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
             <option value="">Select a snack</option>
             {% for s in available_snacks %}
             <option value="{{ s.id }}">{{ s.name }} ({{ s.quantity }} available)</option>
@@ -65,8 +62,8 @@
           </select>
         </div>
         <div>
-          <label for="quantity" class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Quantity</label>
-          <input id="quantity" type="number" name="quantity" value="1" min="1" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
+          <label class="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">Quantity</label>
+          <input type="number" name="quantity" value="1" min="1" required class="w-full px-3 py-2 border border-zinc-300 rounded-md">
         </div>
         <button type="submit" class="w-full bg-zinc-900 text-white py-2 px-4 rounded-md hover:bg-zinc-800 font-medium">Record Usage</button>
       </form>
@@ -113,6 +110,7 @@
         <tr>
           <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Name</th>
           <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Quantity</th>
+          <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Price</th>
           <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Supplier</th>
           <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Status</th>
         </tr>
@@ -122,6 +120,7 @@
         <tr class="hover:bg-zinc-50">
           <td class="px-4 py-3 font-medium">{{ s.name }}</td>
           <td class="px-4 py-3">{{ s.quantity }}</td>
+          <td class="px-4 py-3">${{ s.purchase_price|floatformat:2 }}</td>
           <td class="px-4 py-3 text-zinc-500">{{ s.supplier|default:"-" }}</td>
           <td class="px-4 py-3">
             {% if s.quantity == 0 %}<span class="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded">Out</span>
@@ -139,10 +138,10 @@
 
   {% if tab == 'reports' %}
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div class="bg-sky-50 border border-sky-200 rounded-lg p-6 text-slate-900"><div class="text-2xl font-bold">{{ summary.total_usage }}</div><p class="text-xs text-slate-500 uppercase">Total Snacks Used</p></div>
-    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-slate-900"><div class="text-2xl font-bold">{{ summary.total_transactions }}</div><p class="text-xs text-slate-500 uppercase">Total Transactions</p></div>
-    <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 text-slate-900"><div class="text-2xl font-bold">{{ summary.usage_by_snack|length }}</div><p class="text-xs text-slate-500 uppercase">Snack Types Used</p></div>
-    <div class="bg-violet-50 border border-violet-200 rounded-lg p-6 text-slate-900"><div class="text-2xl font-bold">{{ summary.usage_by_classroom|length }}</div><p class="text-xs text-slate-500 uppercase">Classrooms Served</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.total_usage }}</div><p class="text-xs text-zinc-500 uppercase">Total Snacks Used</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.total_transactions }}</div><p class="text-xs text-zinc-500 uppercase">Total Transactions</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.usage_by_snack|length }}</div><p class="text-xs text-zinc-500 uppercase">Snack Types Used</p></div>
+    <div class="bg-white border border-zinc-300 rounded-lg p-6"><div class="text-2xl font-bold">{{ summary.usage_by_classroom|length }}</div><p class="text-xs text-zinc-500 uppercase">Classrooms Served</p></div>
   </div>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <div class="bg-white border border-zinc-300 rounded-lg p-6">
@@ -181,27 +180,29 @@
       </tbody>
     </table>
   </div>
+  {% autoescape off %}
   <script>
-    var summaryData = JSON.parse('{{ summary_json|escapejs }}');
+    var summaryData = {{ summary_json }};
     if (summaryData.usage_by_snack.length > 0) {
       new Chart(document.getElementById('snack-chart').getContext('2d'), {
-        type: 'bar', data: { labels: summaryData.usage_by_snack.slice(0,8).map(function(s){return s.snack_name}), datasets: [{data: summaryData.usage_by_snack.slice(0,8).map(function(s){return s.total}), backgroundColor: '#2563eb'}] },
+        type: 'bar', data: { labels: summaryData.usage_by_snack.slice(0,8).map(function(s){return s.snack_name}), datasets: [{data: summaryData.usage_by_snack.slice(0,8).map(function(s){return s.total}), backgroundColor: '#18181b'}] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
       });
     }
     if (summaryData.usage_by_classroom.length > 0) {
       new Chart(document.getElementById('classroom-chart').getContext('2d'), {
-        type: 'doughnut', data: { labels: summaryData.usage_by_classroom.map(function(c){return c.classroom_name}), datasets: [{data: summaryData.usage_by_classroom.map(function(c){return c.total}), backgroundColor: ['#2563eb','#14b8a6','#f59e0b','#a855f7','#ec4899','#22c55e']}] },
+        type: 'doughnut', data: { labels: summaryData.usage_by_classroom.map(function(c){return c.classroom_name}), datasets: [{data: summaryData.usage_by_classroom.map(function(c){return c.total}), backgroundColor: ['#18181b','#27272a','#3f3f46','#52525b','#71717a','#a1a1aa']}] },
         options: { responsive: true, maintainAspectRatio: false }
       });
     }
     if (summaryData.daily_trend.length > 0) {
       new Chart(document.getElementById('trend-chart').getContext('2d'), {
-        type: 'line', data: { labels: summaryData.daily_trend.slice(-14).map(function(d){return d.date.slice(5)}), datasets: [{data: summaryData.daily_trend.slice(-14).map(function(d){return d.total}), borderColor: '#14b8a6', backgroundColor: 'rgba(20,184,166,0.12)', fill: true, tension: 0.4}] },
+        type: 'line', data: { labels: summaryData.daily_trend.slice(-14).map(function(d){return d.date.slice(5)}), datasets: [{data: summaryData.daily_trend.slice(-14).map(function(d){return d.total}), borderColor: '#18181b', backgroundColor: 'rgba(24,24,27,0.1)', fill: true, tension: 0.4}] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
       });
     }
   </script>
+  {% endautoescape %}
   {% endif %}
 
 </main>

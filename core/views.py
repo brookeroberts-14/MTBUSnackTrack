@@ -95,17 +95,11 @@ def logout_view(request):
 @admin_required
 def admin_dashboard(request, default_tab=None):
     tab = request.GET.get('tab', default_tab or 'users')
-    all_snacks = models.get_all_snacks()
-    summary = models.get_usage_summary()
     context = {
         'tab': tab,
         'users': models.get_all_users(),
         'classrooms': models.get_all_classrooms(),
-        'snacks': all_snacks,
-        'available_snacks': [s for s in all_snacks if s.quantity > 0],
-        'transactions': models.get_recent_transactions(10),
-        'summary': summary,
-        'summary_json': json.dumps(summary, default=str),
+        'snacks': models.get_all_snacks(),
         'stats': {
             'users': models.User.objects.count(),
             'classrooms': models.Classroom.objects.count(),
@@ -243,11 +237,9 @@ def record_usage_view(request):
             request.session.get('user_id', ''),
             request.session.get('user_name', ''),
         )
-    except ValueError:
-        pass
-    if request.session.get('user_role') == 'admin':
-        return redirect('admin_usage')
-    return redirect('staff_dashboard')
+        return redirect('staff_dashboard')
+    except ValueError as e:
+        return redirect('staff_dashboard')
 
 
 # ---- Data Management ----
