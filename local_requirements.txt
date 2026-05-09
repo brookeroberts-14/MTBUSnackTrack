@@ -1,5 +1,9 @@
 Django==5.1
+
 djangorestframework==3.14.0
+
 psycopg2-binary==2.9.3
+
 gunicorn==20.1.0
+
 python-dotenv==0.19.2   
